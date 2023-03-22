@@ -1,5 +1,5 @@
 const { ValidationError } = require('sequelize')
-const { sequelize, RMInventory, ProductionEntry, SubContractor, ScrapInventory, ScrapEntry, WasherInventory } = require('../models')
+const { sequelize, RMInventory, ProductionEntry, ScrapInventory, ScrapEntry, WasherInventory } = require('../models')
 const express = require('express')
 const router = express.Router()
 
@@ -16,13 +16,6 @@ router.post('/', async (req, res) => {
             }
         })
 
-        let entryObj = {
-            date: req.body.date,
-            raw_material_id: rmInv.id,
-            rm_quantity: req.body.rm_quantity,
-            rm_weight: req.body.rm_weight,
-        }
-
         // Find or create row in the 'washer_inventory' table
         let washerInv = await WasherInventory.findByPk(req.body.part_no)
         if (washerInv === null) {
@@ -36,16 +29,18 @@ router.post('/', async (req, res) => {
             washerInv = await WasherInventory.create(washerInvObj, { transaction: t })
         }
 
-        Object.assign(entryObj, {
+        const entry = await ProductionEntry.create({
+            date: req.body.date,
+            raw_material_id: rmInv.id,
+            rm_quantity: req.body.rm_quantity,
+            rm_weight: req.body.rm_weight,
             part_no: req.body.part_no,
             return_rm_quantity: req.body.return_rm_quantity,
             return_rm_weight: req.body.return_rm_weight,
             washer_quantity: req.body.washer_quantity,
             washer_weight: req.body.washer_weight,
             total_scrap: req.body.total_scrap
-        })
-
-        const entry = await ProductionEntry.create(entryObj, { transaction: t })
+        }, { transaction: t })
 
         // Iterate over scrap object
         for (const type in req.body.scrap) {

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   DeliveryEntry.init({
     date: { type: DataTypes.DATE, allowNull: false },
-    id: { allowNull: false, autoIncrement: true, primaryKey: true, type: DataTypes.INTEGER },
+    invoice_no: { allowNull: false, primaryKey: true, type: DataTypes.INTEGER },
     part_no: { type: DataTypes.INTEGER, allowNull: false },
     customer_id: { type: DataTypes.INTEGER, allowNull: false },
     quantity: { type: DataTypes.INTEGER, allowNull: false },
