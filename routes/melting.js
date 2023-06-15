@@ -59,4 +59,36 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        let entries = await MeltingEntry.findAll({
+            include: [{
+                model: Customer,
+                attributes: ['name']
+            },
+            {
+                model: ScrapEntry,
+                include: { model: ScrapInventory, attributes: ['material', 'type'] },
+                attributes: ['weight_change']
+            }],
+            attributes: { exclude: ['customer_id', 'createdAt', 'updatedAt'] }
+        })
+
+        for (let i=0; i<entries.length; i++) {
+            entries[i] = JSON.parse(JSON.stringify(entries[i]))
+            entries[i].customer_name = entries[i].Customer.name
+            delete entries[i].Customer
+
+            entries[i].material = entries[i].ScrapEntries[0].ScrapInventory.material
+            entries[i].scrap = {}
+            for (let j=0; j<entries[i].ScrapEntries.length; j++) {
+                entries[i].scrap[entries[i].ScrapEntries[j].ScrapInventory.type] = -entries[i].ScrapEntries[j].weight_change
+            }
+            delete entries[i].ScrapEntries
+        }
+
+        res.send(entries)
+    } catch (e) { res.status(500).send(e) }
+})
+
 module.exports = router

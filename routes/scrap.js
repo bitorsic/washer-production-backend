@@ -48,7 +48,7 @@ router.get('/history', async (req, res) => {
         }
 
         res.send(entries)
-    } catch (e) { res.status(500).send(e); console.log(e) }
+    } catch (e) { res.status(500).send(e) }
 })
 
 router.get('/inventory', async (req, res) => {

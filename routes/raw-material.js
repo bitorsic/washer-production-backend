@@ -3,7 +3,7 @@ const { sequelize, RMEntry, RMInventory } = require('../models')
 const express = require('express')
 const router = express.Router()
 
-router.post('/', async (req, res) => {
+router.post('/entry', async (req, res) => {
     const t = await sequelize.transaction()
     try {
         // Find or create row in the 'rm_inventory' table
@@ -49,38 +49,35 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/entry', async (req, res) => {
     try {
-        if (req.query.table == 'entry') {
-            let entries = await RMEntry.findAll({ 
-                include: {
-                    model: RMInventory,
-                    attributes: ['material', 'form', 'thickness', 'length']
-                },
-                attributes: ['date', 'lot_no', 'quantity', 'weight']
-            })
-            
-            for (let i=0; i<entries.length; i++) {
-                entries[i] = JSON.parse(JSON.stringify(entries[i]))
-                Object.assign(entries[i], entries[i].RMInventory)
-                delete entries[i].RMInventory
-            }
-
-            res.send(entries)
+        let entries = await RMEntry.findAll({ 
+            include: {
+                model: RMInventory,
+                attributes: ['material', 'form', 'thickness', 'length']
+            },
+            attributes: ['date', 'lot_no', 'quantity', 'weight']
+        })
+        
+        for (let i=0; i<entries.length; i++) {
+            entries[i] = JSON.parse(JSON.stringify(entries[i]))
+            Object.assign(entries[i], entries[i].RMInventory)
+            delete entries[i].RMInventory
         }
-        else if (req.query.table == 'inventory') {
-            let data = await RMInventory.findAll({
-                attributes: { exclude: ['createdAt', 'updatedAt'] }
-            })
 
-            res.send(data)
-        }
-        else { throw 400 }
-    } catch (e) { 
-        let code = 500, message = e
-        if (e == 400) { code = e; message = "Invalid query parameters" }
-        res.status(code).send(message)
-    }
+        res.send(entries)
+
+        
+    } catch (e) { res.status(500).send(e) }
 })
 
+router.get('/inventory', async (req, res) => {
+    try {
+        let data = await RMInventory.findAll({
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
+        })
+
+        res.send(data)
+    } catch (e) { res.status(500).send(e) }
+})
 module.exports = router
