@@ -51,22 +51,36 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        let entries = await RMEntry.findAll({ 
-            include: {
-                model: RMInventory,
-                attributes: ['material', 'form', 'thickness', 'length']
-            },
-            attributes: ['date', 'lot_no', 'quantity', 'weight']
-        })
-        
-        for (let i=0; i<entries.length; i++) {
-            entries[i] = JSON.parse(JSON.stringify(entries[i]))
-            Object.assign(entries[i], entries[i].RMInventory)
-            delete entries[i].RMInventory
-        }
+        if (req.query.table == 'entry') {
+            let entries = await RMEntry.findAll({ 
+                include: {
+                    model: RMInventory,
+                    attributes: ['material', 'form', 'thickness', 'length']
+                },
+                attributes: ['date', 'lot_no', 'quantity', 'weight']
+            })
+            
+            for (let i=0; i<entries.length; i++) {
+                entries[i] = JSON.parse(JSON.stringify(entries[i]))
+                Object.assign(entries[i], entries[i].RMInventory)
+                delete entries[i].RMInventory
+            }
 
-        res.send(entries)
-    } catch (e) { res.status(500).send(e) }
+            res.send(entries)
+        }
+        else if (req.query.table == 'inventory') {
+            let data = await RMInventory.findAll({
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
+            })
+
+            res.send(data)
+        }
+        else { throw 400 }
+    } catch (e) { 
+        let code = 500, message = e
+        if (e == 400) { code = e; message = "Invalid query parameters" }
+        res.status(code).send(message)
+    }
 })
 
 module.exports = router

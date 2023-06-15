@@ -23,7 +23,7 @@ router.get('/history', async (req, res) => {
                     attributes: ['date']
                 }
             ],
-            attributes: ['weight_change']
+            attributes: ['production_id', 'melting_id', 'weight_change']
         })
 
         for (let i=0; i<entries.length; i++) {
@@ -34,8 +34,11 @@ router.get('/history', async (req, res) => {
                 Object.assign(entries[i], entries[i].MeltingEntry.Customer)
                 delete entries[i].MeltingEntry.Customer
                 Object.assign(entries[i], entries[i].MeltingEntry)
+                delete entries[i].production_id
             } else {
                 entries[i].process = "Production"
+                Object.assign(entries[i], entries[i].ProductionEntry)
+                delete entries[i].melting_id
             }
             delete entries[i].MeltingEntry
             delete entries[i].ProductionEntry

@@ -86,4 +86,45 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.get('/', async (req, res) => {
+    try {
+        let entries = await ProductionEntry.findAll({ 
+            include: [{
+                model: RMInventory,
+                attributes: ['material', 'form', 'thickness', 'length']
+            }, 
+            { 
+                model: ScrapEntry,
+                include: { model: ScrapInventory, attributes: ['type'] },
+                attributes: ['weight_change']
+            }, { 
+                model: WasherInventory,
+                attributes: ['size']
+            }],
+            attributes: { exclude: ['raw_material_id', 'createdAt', 'updatedAt'] }
+        })
+        
+        for (let i=0; i<entries.length; i++) {
+            entries[i] = JSON.parse(JSON.stringify(entries[i]))
+            Object.assign(entries[i], entries[i].RMInventory)
+            Object.assign(entries[i], entries[i].WasherInventory)
+            delete entries[i].RMInventory
+            delete entries[i].WasherInventory
+
+            entries[i].scrap = {}
+            for (let j=0; j<entries[i].ScrapEntries.length; j++) {
+                entries[i].scrap[entries[i].ScrapEntries[j].ScrapInventory.type] = entries[i].ScrapEntries[j].weight_change
+            }
+            delete entries[i].ScrapEntries
+        }
+
+        res.send(entries)
+    } catch (e) { 
+        let code = 500, message = e
+        if (e == 400) { code = e; message = "Invalid query parameters" }
+        res.status(code).send(message)
+        console.log(message)
+    }
+})
+
 module.exports = router

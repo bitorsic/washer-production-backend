@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       ProductionEntry.hasMany(models.ScrapEntry, { foreignKey: 'production_id' })
       ProductionEntry.belongsTo(models.WasherInventory, { foreignKey: 'part_no', constraints: false })
       ProductionEntry.belongsTo(models.RMInventory, { foreignKey: 'raw_material_id', constraints: false })
-      ProductionEntry.belongsTo(models.RMEntry, { foreignKey: 'lot_no', constraints: false })
     }
   }
   ProductionEntry.init({

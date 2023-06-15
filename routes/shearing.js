@@ -73,7 +73,7 @@ router.get('/', async (req, res) => {
                 as: 'SheetRM',
                 attributes: ['material', 'thickness']
             },
-            attributes: ['date','weight', 'sheet_quantity', 'strip_quantity']
+            attributes: ['id', 'date', 'weight', 'sheet_quantity', 'strip_quantity']
         })
         
         for (let i=0; i<entries.length; i++) {
