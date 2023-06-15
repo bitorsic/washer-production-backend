@@ -97,7 +97,8 @@ router.get('/', async (req, res) => {
                 model: ScrapEntry,
                 include: { model: ScrapInventory, attributes: ['type'] },
                 attributes: ['weight_change']
-            }, { 
+            }, 
+            { 
                 model: WasherInventory,
                 attributes: ['size']
             }],

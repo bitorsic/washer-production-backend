@@ -70,16 +70,16 @@ router.get('/', async (req, res) => {
         let entries = await ShearingEntry.findAll({ 
             include: {
                 model: RMInventory,
-                as: 'SheetRM',
-                attributes: ['material', 'thickness']
+                as: 'StripRM',
+                attributes: ['material', 'thickness', 'length']
             },
             attributes: ['id', 'date', 'weight', 'sheet_quantity', 'strip_quantity']
         })
         
         for (let i=0; i<entries.length; i++) {
             entries[i] = JSON.parse(JSON.stringify(entries[i]))
-            Object.assign(entries[i], entries[i].SheetRM)
-            delete entries[i].SheetRM
+            Object.assign(entries[i], entries[i].StripRM)
+            delete entries[i].StripRM
         }
 
         res.send(entries)
