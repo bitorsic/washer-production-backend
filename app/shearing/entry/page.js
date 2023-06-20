@@ -2,16 +2,15 @@
 
 import React, { useEffect, useState } from "react"
 
-let materialValues = [], formValues = []
+let materialValues = []
 const initialValues = {
-    date: "",
-    lot_no: "",
-    material: "",
-    form: "",
-    thickness: "",
-    length: "",
-    quantity: "",
-    weight: "",
+    "date": "",
+    "material": "",
+    "thickness": "",
+    "length": "",
+    "weight": "",
+    "sheet_quantity": "",
+    "strip_quantity": "",
 }
 
 export default function RMEntry() {
@@ -22,27 +21,20 @@ export default function RMEntry() {
         setValues({ ...values, [name]: value })
     }
 
-    const setOptions = (id, array) => {
-        let element = document.getElementById(id)
-            for (let key in array) {
-                let option = document.createElement("option")
-                option.setAttribute('key', array[key])
-                option.innerHTML = array[key]
-                element.appendChild(option)
-            }
-    }
-
     useEffect(() => {
         const getValues = async () => {
             let response = await fetch('http://localhost:5000/values?col=materials')
             materialValues = await response.json()
-            setOptions("material", materialValues)
 
-            response = await fetch('http://localhost:5000/values?col=forms')
-            formValues = await response.json()
-            setOptions("form", formValues)
+            let materialEl = document.getElementById("material")
+            for (let key in materialValues) {
+                let option = document.createElement("option")
+                option.setAttribute('key', materialValues[key])
+                option.innerHTML = materialValues[key]
+                materialEl.appendChild(option)
+            }
 
-            setValues({ ...values, material: materialValues[0], form: formValues[0] })
+            setValues({ ...values, material: materialValues[0] })
         }
         getValues()
     }, [])
@@ -53,28 +45,10 @@ export default function RMEntry() {
             materialEl.setAttribute('value', values.material)
         }
     }, [values.material])
-
-    useEffect(() => {
-        if (values.form !== '') {
-            let formEl = document.getElementById("form")
-            formEl.setAttribute('value', values.form)
-
-            let lengthEl = document.getElementById("length")
-            if (values.form == 'Sheet') {
-                lengthEl.disabled = true
-                lengthEl.value = null
-                values.length = null
-            } else if (values.form == 'Strip') {
-                lengthEl.disabled = false
-                lengthEl.value = ""
-                values.length = ""
-            }
-        }
-    }, [values.form])
     
     const sendData = async (e) => {
         e.preventDefault()
-        const response = await fetch('http://localhost:5000/raw-material/entry', {
+        const response = await fetch('http://localhost:5000/shearing-entries', {
             method: 'POST',
             body: JSON.stringify(values),
             headers: {
@@ -88,7 +62,7 @@ export default function RMEntry() {
     return (
         <section className="max-w-6xl p-6 mx-auto bg-white rounded-md shadow-xl">
             <h2 className="text-lg font-semibold text-gray-700 capitalize">
-                New Raw Material Entry
+                New Shearing Entry
             </h2>
             <form>
                 <div className="grid grid-cols-2 gap-6 mt-4 sm:grid-cols-2">
@@ -104,30 +78,10 @@ export default function RMEntry() {
                             />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="lot_no">
-                            Lot No.
-                        </label>
-                        <input id="lot_no" name="lot_no"
-                            value={values.lot_no}
-                            onChange={handleInputChange}
-                            type="number"
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
-                            />
-                    </div>
-                    <div>
                         <label className="text-gray-700" htmlFor="material">
                             Material
                         </label>
                         <select id="material" name="material"
-                        onChange={handleInputChange}
-                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring">
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-gray-700" htmlFor="form">
-                            Form
-                        </label>
-                        <select id="form" name="form"
                         onChange={handleInputChange}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring">
                         </select>
@@ -155,22 +109,33 @@ export default function RMEntry() {
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="quantity">
-                            Quantity
+                        <label className="text-gray-700" htmlFor="weight">
+                            Weight
                         </label>
-                        <input id="quantity" name="quantity"
-                            value={values.quantity}
+                        <input id="weight" name="weight"
+                            value={values.weight}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="weight">
-                            Weight
+                        <label className="text-gray-700" htmlFor="sheet_quantity">
+                            Sheet Quantity
                         </label>
-                        <input id="weight" name="weight"
-                            value={values.weight}
+                        <input id="sheet_quantity" name="sheet_quantity"
+                            value={values.sheet_quantity}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="strip_quantity">
+                            Strip Quantity
+                        </label>
+                        <input id="strip_quantity" name="strip_quantity"
+                            value={values.strip_quantity}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"

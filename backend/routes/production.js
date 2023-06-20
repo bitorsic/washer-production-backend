@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
             weight: entry.washer_weight
         }, { transaction: t })
         
-        res.status(201).send({ success: true })
+        res.status(201).send({ success: true, msg: "Entry successful" })
         await t.commit()
     } catch (e) {
         let code = 500, message = e

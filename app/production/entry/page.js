@@ -2,16 +2,22 @@
 
 import React, { useEffect, useState } from "react"
 
-let materialValues = [], formValues = []
+let materialValues = [], formValues = [], scrapValues = [], scrapObj = {}
 const initialValues = {
     date: "",
-    lot_no: "",
     material: "",
     form: "",
     thickness: "",
     length: "",
-    quantity: "",
-    weight: "",
+    size: "",
+    part_no: "",
+    rm_quantity: "",
+    rm_weight: "",
+    return_rm_quantity: "",
+    return_rm_weight: "",
+    washer_quantity: "",
+    washer_weight: "",
+    total_scrap: ""
 }
 
 export default function RMEntry() {
@@ -20,6 +26,37 @@ export default function RMEntry() {
     const handleInputChange = (e) => {
         const { name, value } = e.target
         setValues({ ...values, [name]: value })
+    }
+
+    const createField = (fieldName, fieldLabel) => {
+        let element = document.getElementById("grid")
+        let div = document.createElement("div")
+
+        let label = document.createElement("label")
+        label.setAttribute('class', "text-gray-700")
+        label.setAttribute('for', fieldName)
+        label.innerHTML = fieldLabel
+        
+        let input = document.createElement("input")
+        input.setAttribute('id', fieldName)
+        input.setAttribute('class', "block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring")
+        input.setAttribute('name', fieldName)
+        input.setAttribute('type', "number")
+
+        div.appendChild(label)
+        div.appendChild(input)
+        element.appendChild(div)
+    }
+
+    const createFields = () => {
+        for (let key in scrapValues) {
+            createField(scrapValues[key], scrapValues[key] + " Scrap")
+            let input = document.getElementById(scrapValues[key])
+            input.addEventListener("change", (e) => {
+                const { name, value } = e.target
+                scrapObj[name] = value
+            })
+        }
     }
 
     const setOptions = (id, array) => {
@@ -42,7 +79,16 @@ export default function RMEntry() {
             formValues = await response.json()
             setOptions("form", formValues)
 
+            response = await fetch('http://localhost:5000/values?col=scrap_types')
+            scrapValues = await response.json()
+
+            for (let key in scrapValues) {
+                scrapObj = {...scrapObj, [scrapValues[key]]: ""}
+            }
+
             setValues({ ...values, material: materialValues[0], form: formValues[0] })
+
+            createFields()
         }
         getValues()
     }, [])
@@ -74,9 +120,16 @@ export default function RMEntry() {
     
     const sendData = async (e) => {
         e.preventDefault()
-        const response = await fetch('http://localhost:5000/raw-material/entry', {
+        let sum = 0
+        for (let key in scrapValues) {
+            let input = document.getElementById(scrapValues[key])
+            sum += Number(input.value)
+        }
+
+        let obj = {...values, scrap: scrapObj, total_scrap: sum}
+        const response = await fetch('http://localhost:5000/production-entries', {
             method: 'POST',
-            body: JSON.stringify(values),
+            body: JSON.stringify(obj),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -88,10 +141,10 @@ export default function RMEntry() {
     return (
         <section className="max-w-6xl p-6 mx-auto bg-white rounded-md shadow-xl">
             <h2 className="text-lg font-semibold text-gray-700 capitalize">
-                New Raw Material Entry
+                New Production Entry
             </h2>
             <form>
-                <div className="grid grid-cols-2 gap-6 mt-4 sm:grid-cols-2">
+                <div id="grid" className="grid grid-cols-5 gap-6 mt-4 sm:grid-cols-3">
                     <div>
                         <label className="text-gray-700" htmlFor="date">
                             Date
@@ -101,17 +154,6 @@ export default function RMEntry() {
                             onChange={handleInputChange}
                             type="date"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                            />
-                    </div>
-                    <div>
-                        <label className="text-gray-700" htmlFor="lot_no">
-                            Lot No.
-                        </label>
-                        <input id="lot_no" name="lot_no"
-                            value={values.lot_no}
-                            onChange={handleInputChange}
-                            type="number"
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
                             />
                     </div>
                     <div>
@@ -155,22 +197,88 @@ export default function RMEntry() {
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="quantity">
-                            Quantity
+                        <label className="text-gray-700" htmlFor="size">
+                            Size
                         </label>
-                        <input id="quantity" name="quantity"
-                            value={values.quantity}
+                        <input id="size" name="size"
+                            value={values.size}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="weight">
-                            Weight
+                        <label className="text-gray-700" htmlFor="part_no">
+                            Part No.
                         </label>
-                        <input id="weight" name="weight"
-                            value={values.weight}
+                        <input id="part_no" name="part_no"
+                            value={values.part_no}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="rm_quantity">
+                            Raw Material Quantity
+                        </label>
+                        <input id="rm_quantity" name="rm_quantity"
+                            value={values.rm_quantity}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="rm_weight">
+                            Raw Material Weight
+                        </label>
+                        <input id="rm_weight" name="rm_weight"
+                            value={values.rm_weight}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="return_rm_quantity">
+                            Raw Material Quantity Returned
+                        </label>
+                        <input id="return_rm_quantity" name="return_rm_quantity"
+                            value={values.return_rm_quantity}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="return_rm_weight">
+                            Raw Material Weight Returned
+                        </label>
+                        <input id="return_rm_weight" name="return_rm_weight"
+                            value={values.return_rm_weight}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="washer_quantity">
+                            Washer Quantity
+                        </label>
+                        <input id="washer_quantity" name="washer_quantity"
+                            value={values.washer_quantity}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="washer_weight">
+                            Washer Weight
+                        </label>
+                        <input id="washer_weight" name="washer_weight"
+                            value={values.washer_weight}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"

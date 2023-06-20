@@ -17,17 +17,21 @@ export default function Dashboard() {
                     className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>New RM Entry</span>
                     </button>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>RM Entry History</span>
                     </button>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>RM Inventory</span>
                     </button>
                 </div>
 
                 <div className="flex flex-col max-w-xs gap-y-5">
                     <h2 className="flex justify-center font-semibold text-xl">Shearing</h2>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    onClick={() => router.push('/shearing/entry')} 
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>New Shearing Entry</span>
                     </button>
                     <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
@@ -37,13 +41,17 @@ export default function Dashboard() {
 
                 <div className="flex flex-col max-w-xs gap-y-5">
                     <h2 className="flex justify-center font-semibold text-xl">Production</h2>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    onClick={() => router.push('/production/entry')}
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>New Production Entry</span>
                     </button>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>Production Entry History</span>
                     </button>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>Washer Inventory</span>
                     </button>
                 </div>
