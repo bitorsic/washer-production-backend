@@ -68,7 +68,9 @@ export default function Dashboard() {
 
                 <div className="flex flex-col max-w-xs gap-y-5">
                     <h2 className="flex justify-center font-semibold text-xl">Melting</h2>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    onClick={() => router.push('/melting/entry')}
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>New Melting Entry</span>
                     </button>
                     <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
@@ -78,7 +80,9 @@ export default function Dashboard() {
 
                 <div className="flex flex-col max-w-xs gap-y-5">
                     <h2 className="flex justify-center font-semibold text-xl">Delivery</h2>
-                    <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
+                    <button 
+                    onClick={() => router.push('/delivery/entry')}
+                    className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">
                         <span>New Delivery Entry</span>
                     </button>
                     <button className="bg-black flex items-center text-white justify-center gap-x-3  rounded-lg hover:bg-gray-700 duration-300 transition-colors border px-8 py-2.5">

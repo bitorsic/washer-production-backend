@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "client": "next start",
+    "server": "node ./backend/server.js",
     "lint": "next lint",
     "devStart": "nodemon ./backend/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "both": "concurrently \"npm run server\" \"npm run dev\""
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
+    "concurrently": "^8.2.0",
     "nodemon": "^2.0.20",
     "postcss": "^8.4.24",
     "sequelize-cli": "^6.4.1",

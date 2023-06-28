@@ -20,7 +20,7 @@ const initialValues = {
     total_scrap: ""
 }
 
-export default function RMEntry() {
+export default function ProductionEntry() {
     const [values, setValues] = useState(initialValues)
 
     const handleInputChange = (e) => {

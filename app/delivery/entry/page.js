@@ -2,18 +2,20 @@
 
 import React, { useEffect, useState } from "react"
 
-let materialValues = []
 const initialValues = {
-    "date": "",
-    "material": "",
-    "thickness": "",
-    "length": "",
-    "weight": "",
-    "sheet_quantity": "",
-    "strip_quantity": "",
+    date: "",
+    invoice_no: "",
+    customer_name: "",
+    customer_city: "",
+    part_no: "",
+    quantity: "",
+    weight: "",
+    rate: "",
+    tax_rate: "",
+    total_amount: ""
 }
 
-export default function ShearingEntry() {
+export default function DeliveryEntry() {
     const [values, setValues] = useState(initialValues)
 
     const handleInputChange = (e) => {
@@ -21,34 +23,19 @@ export default function ShearingEntry() {
         setValues({ ...values, [name]: value })
     }
 
-    useEffect(() => {
-        const getValues = async () => {
-            let response = await fetch('http://localhost:5000/values?col=materials')
-            materialValues = await response.json()
-
-            let materialEl = document.getElementById("material")
-            for (let key in materialValues) {
+    const setOptions = (id, array) => {
+        let element = document.getElementById(id)
+            for (let key in array) {
                 let option = document.createElement("option")
-                option.setAttribute('key', materialValues[key])
-                option.innerHTML = materialValues[key]
-                materialEl.appendChild(option)
+                option.setAttribute('key', array[key])
+                option.innerHTML = array[key]
+                element.appendChild(option)
             }
-
-            setValues({ ...values, material: materialValues[0] })
-        }
-        getValues()
-    }, [])
-
-    useEffect(() => {
-        if (values.material !== '') {
-            let materialEl = document.getElementById("material")
-            materialEl.setAttribute('value', values.material)
-        }
-    }, [values.material])
+    }
     
     const sendData = async (e) => {
         e.preventDefault()
-        const response = await fetch('http://localhost:5000/shearing-entries', {
+        const response = await fetch('http://localhost:5000/delivery-entries', {
             method: 'POST',
             body: JSON.stringify(values),
             headers: {
@@ -62,10 +49,10 @@ export default function ShearingEntry() {
     return (
         <section className="max-w-6xl p-6 mx-auto bg-white rounded-md shadow-xl">
             <h2 className="text-lg font-semibold text-gray-700 capitalize">
-                New Shearing Entry
+                New Delivery Entry
             </h2>
             <form>
-                <div className="grid grid-cols-2 gap-6 mt-4 sm:grid-cols-2">
+                <div id="grid" className="grid grid-cols-2 gap-6 mt-4 sm:grid-cols-2">
                     <div>
                         <label className="text-gray-700" htmlFor="date">
                             Date
@@ -78,31 +65,55 @@ export default function ShearingEntry() {
                             />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="material">
-                            Material
+                        <label className="text-gray-700" htmlFor="invoice_no">
+                            Invoice No.
                         </label>
-                        <select id="material" name="material"
-                        onChange={handleInputChange}
-                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring">
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-gray-700" htmlFor="thickness">
-                            Thickness
-                        </label>
-                        <input id="thickness" name="thickness"
-                            value={values.thickness}
+                        <input id="invoice_no" name="invoice_no"
+                            value={values.invoice_no}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="length">
-                            Length
+                        <label className="text-gray-700" htmlFor="customer_name">
+                            Customer Name
                         </label>
-                        <input id="length" name="length"
-                            value={values.length}
+                        <input id="customer_name" name="customer_name"
+                            value={values.customer_name}
+                            onChange={handleInputChange}
+                            type="text"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                            />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="customer_city">
+                            Customer City
+                        </label>
+                        <input id="customer_city" name="customer_city"
+                            value={values.customer_city}
+                            onChange={handleInputChange}
+                            type="text"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                            />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="part_no">
+                            Part No.
+                        </label>
+                        <input id="part_no" name="part_no"
+                            value={values.part_no}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="quantity">
+                            Quantity
+                        </label>
+                        <input id="quantity" name="quantity"
+                            value={values.quantity}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
@@ -120,22 +131,33 @@ export default function ShearingEntry() {
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="sheet_quantity">
-                            Sheet Quantity
+                        <label className="text-gray-700" htmlFor="rate">
+                            Rate (/unit)
                         </label>
-                        <input id="sheet_quantity" name="sheet_quantity"
-                            value={values.sheet_quantity}
+                        <input id="rate" name="rate"
+                            value={values.rate}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
                         />
                     </div>
                     <div>
-                        <label className="text-gray-700" htmlFor="strip_quantity">
-                            Strip Quantity
+                        <label className="text-gray-700" htmlFor="tax_rate">
+                            Tax Rate (%)
                         </label>
-                        <input id="strip_quantity" name="strip_quantity"
-                            value={values.strip_quantity}
+                        <input id="tax_rate" name="tax_rate"
+                            value={values.tax_rate}
+                            onChange={handleInputChange}
+                            type="number"
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-gray-700" htmlFor="total_amount">
+                            Total Amount
+                        </label>
+                        <input id="total_amount" name="total_amount"
+                            value={values.total_amount}
                             onChange={handleInputChange}
                             type="number"
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring"
